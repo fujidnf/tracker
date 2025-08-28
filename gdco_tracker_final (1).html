@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>gdco tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            padding: 10px;
+            z-index: 999;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="loading">🔄 Φόρτωση χάρτη... Βεβαιωθείτε ότι έχετε ενεργοποιήσει το GPS και δώσατε άδεια τοποθεσίας στον browser.</div>
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZ2Rjb3Rlc3QiLCJhIjoiY2xvZ3Z6ZzZxMDZzZTNwcGZ5Z3Z3Z3Z0cSJ9.3gJZzvKZbXv3gYJvZgJvZg';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [23.7275, 37.9838], // Default center: Athens
+            zoom: 12
+        });
+
+        map.on('load', () => {
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const userCoordinates = [position.coords.longitude, position.coords.latitude];
+                map.setCenter(userCoordinates);
+                new mapboxgl.Marker()
+                    .setLngLat(userCoordinates)
+                    .setPopup(new mapboxgl.Popup().setText("Η θέση σου"))
+                    .addTo(map);
+            }, function(error) {
+                alert("⚠️ Δεν ήταν δυνατή η εντοπισμός της θέσης σου. Βεβαιώσου ότι έχεις ενεργοποιήσει το GPS και έδωσες άδεια στον browser.");
+            });
+        } else {
+            alert("⚠️ Ο browser σου δεν υποστηρίζει εντοπισμό θέσης.");
+        }
+    </script>
+</body>
+</html>
